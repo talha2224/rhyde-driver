@@ -1,3 +1,4 @@
+import profile_image from "../assets/images/profile_photo.png";
 
 export const notificationsData = [
   {
@@ -194,7 +195,7 @@ export const rydesData = [
     distance: "10 Mins away",
     reviews: 120,
     price: "$34.60",
-    color:  "#FBB73A",
+    color: "#FBB73A",
   },
   {
     id: "3",
@@ -202,7 +203,7 @@ export const rydesData = [
     distance: "10 Mins away",
     reviews: 120,
     price: "$34.60",
-    color:  "#FBB73A",
+    color: "#FBB73A",
   },
   {
     id: "4",
@@ -210,7 +211,7 @@ export const rydesData = [
     distance: "10 Mins away",
     reviews: 120,
     price: "$34.60",
-    color:  "#FBB73A",
+    color: "#FBB73A",
   },
 ];
 
@@ -256,4 +257,176 @@ export const cancellationReasons = [
   { id: "4", text: "I don't want the journey" },
   { id: "5", text: "Driver denied coming to pickup" },
   { id: "6", text: "Others" },
+];
+
+export const rydeRequests = [
+  {
+    id: "1",
+    name: "Alisha Mark",
+    distance: "2.7KM",
+    price: "$21",
+    pickup: "4517 Washington Ave, Manchester",
+    destination: "2118 Thornridge Cir, Syracuse, Con",
+    avatar: profile_image,
+  },
+  {
+    id: "2",
+    name: "Mike",
+    distance: "3.1KM",
+    price: "$10",
+    pickup: "123 Main St, Anytown",
+    destination: "456 Oak Ave, Otherville",
+    avatar: profile_image,
+  },
+  {
+    id: "3",
+    name: "Sarah",
+    distance: "1.5KM",
+    price: "$15",
+    pickup: "789 Pine Ln, Somewhere",
+    destination: "101 Elm Blvd, Nowhere",
+    avatar: profile_image,
+  },
+];
+
+export const userDetails = {
+  name: "Paul Cleverly",
+  location: "Kingston, Jamaica",
+  rating: 4.8,
+  numberOfTrips: 200,
+  totalEarned: "$200",
+};
+
+export const reviewsData = {
+  averageRating: 4.5,
+  totalReviews: 12004,
+  ratingsBreakdown: { 5: 85, 4: 9, 3: 4, 2: 2, 1: 1 },
+  feedback: [
+    {
+      id: "1",
+      userName: "Sammy Mahrex",
+      tripId: "GFD6746DGUFVY3R",
+      date: "30/03/25",
+      comment:
+        "The driver was calm, attentive and straightforward, I will recommend him any day anytime.",
+    },
+    {
+      id: "2",
+      userName: "Jim Hyke",
+      tripId: "GFD6746DGUFVY3R",
+      date: "30/03/25",
+      comment: "Well reserved and composed in nature",
+    },
+    {
+      id: "3",
+      userName: "Michael",
+      tripId: "GFD6746DGUFVY3R",
+      date: "30/03/25",
+      comment: "Well reserved and composed in nature",
+    },
+  ],
+};
+
+export const milestonesData = [
+  {
+    id: "1",
+    level: 1,
+    title: "2% off first ryde",
+    reached: true,
+    description: "You're currently in this level",
+  },
+  {
+    id: "2",
+    level: 10,
+    title: "Free ryde for a day",
+    reached: false,
+    description: "Level 10",
+    progress: "10/20 rides",
+  },
+  {
+    id: "3",
+    level: 20,
+    title: "10% off ryde",
+    reached: true,
+    description: "You're currently in this level",
+  },
+  {
+    id: "4",
+    level: 30,
+    title: "10% off first ryde for 48 hrs",
+    reached: false,
+    description: "Level 30",
+  },
+  {
+    id: "5",
+    level: 40,
+    title: "10% off ryde",
+    reached: false,
+    description: "Level 40",
+  },
+];
+
+export const menuItems = [
+  {
+    title: "My Profile",
+    description: "Customize your app experience",
+    icon: "account-details-outline",
+    route: "/home/profile/singleprofile",
+  },
+  {
+    title: "Settings",
+    description: "Customize your app experience",
+    icon: "cog-outline",
+    route: "/home/profile/setting",
+  },
+  {
+    title: "Notifications",
+    description: "Stay updated on your trips",
+    icon: "bell-outline",
+    route: "/home/profile/notification",
+  },
+  {
+    title: "Payment methods",
+    description: "Manage your payout",
+    icon: "credit-card-outline",
+    route: "/home/profile/paymentmethod",
+  },
+  {
+    title: "Vehicle information",
+    description: "Manage your vehicle",
+    icon: "car",
+    route: "/home/profile/vehicleinformation",
+  },
+    {
+    title: "Emergency",
+    description: "",
+    icon: "phone",
+    route: "/home/profile/emergency",
+  },
+  {
+    title: "Customer Support",
+    description: "Chat with our customer support",
+    icon: "lifebuoy",
+    route: "/home/profile/support",
+  },
+  {
+    title: "Subscription",
+    description: "Subscribe to our premium plan",
+    icon: "tag-heart-outline",
+    route: "/home/profile/subscription",
+  },
+  {
+    title: "Report a problem",
+    description: "Let's help you experience the best",
+    icon: "alert-circle-outline",
+    route: "/home/profile/report",
+    danger: true,
+  },
+  {
+    title: "Logout",
+    description: "",
+    icon: "logout",
+    route: "/",
+    danger: true,
+  },
 ];

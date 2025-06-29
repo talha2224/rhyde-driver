@@ -10,11 +10,11 @@ import {
     View,
 } from 'react-native';
 
-import bellImg from "../../../assets/images/bell.png"; // Assuming this path is correct
-import userImg from "../../../assets/images/home/user.png"; // Re-using for friend avatars
+import bellImg from "../../../assets/images/bell.png";
+import userImg from "../../../assets/images/home/user.png";
 
 const Emergency = () => {
-    const [isCalling, setIsCalling] = useState(false); // State for calling status
+    const [isCalling, setIsCalling] = useState(false);
 
     const handleGoBack = () => {
         router.back();
@@ -22,17 +22,12 @@ const Emergency = () => {
 
     const handleCallEmergency = () => {
         setIsCalling(true);
-        // In a real application, you would initiate a call to 911 here
-        // For demonstration, we'll just log and keep the button text updated.
         console.log('Calling 911...');
-        // Simulate call completion or error after a delay
         setTimeout(() => {
-            // setIsCalling(false); // Uncomment to revert button state
-            // Alert.alert('Call Status', 'Call to 911 completed or disconnected.'); // Or use a custom modal
+            // Optionally handle completion here
         }, 5000);
     };
 
-    // Dummy data for notified friends
     const friendsNotified = [
         { id: '1', name: 'Andrew Talks', avatar: userImg },
         { id: '2', name: 'Shenaya', avatar: userImg },
@@ -44,14 +39,11 @@ const Emergency = () => {
     return (
         <View style={styles.container}>
             <StatusBar barStyle="light-content" backgroundColor="#1A1A1B" />
-
-            {/* Back Button */}
             <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
                 <Ionicons name="chevron-back" size={24} color="white" />
             </TouchableOpacity>
 
             <View style={styles.contentArea}>
-                {/* Emergency Alert Section */}
                 <View style={styles.emergencyAlertSection}>
                     <Image source={bellImg} style={styles.bellImage} />
                     <Text style={styles.alertTitle}>Emergency Alert</Text>
@@ -59,16 +51,15 @@ const Emergency = () => {
                     <TouchableOpacity
                         style={styles.callButton}
                         onPress={handleCallEmergency}
-                        disabled={isCalling} // Disable button while calling
+                        disabled={isCalling}
                     >
                         <Ionicons name="call" size={24} color="#1C1A1B" style={styles.callIcon} />
                         <Text style={styles.callButtonText}>
-                            {isCalling ? 'Calling 911...' : 'Calling 911...'} {/* Text stays same as per image */}
+                            {isCalling ? 'Calling 911...' : 'Calling 911...'}
                         </Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Friends Notified Section */}
                 <View style={styles.friendsNotifiedSection}>
                     <Text style={styles.friendsNotifiedHeader}>Your friends has been notified</Text>
                     {friendsNotified.map((friend) => (
@@ -82,12 +73,12 @@ const Emergency = () => {
             </View>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#1C1A1B', // Dark background
+        backgroundColor: '#1C1A1B',
         paddingTop: StatusBar.currentHeight + 20,
         paddingHorizontal: 25,
     },
@@ -103,7 +94,7 @@ const styles = StyleSheet.create({
     contentArea: {
         flex: 1,
         marginTop: 40,
-        alignItems: 'center', // Center content horizontally
+        alignItems: 'center',
     },
     emergencyAlertSection: {
         borderRadius: 15,
@@ -132,7 +123,7 @@ const styles = StyleSheet.create({
     },
     callButton: {
         flexDirection: 'row',
-        backgroundColor: '#FFD700', // Gold color
+        backgroundColor: '#FFD700',
         borderRadius: 15,
         paddingVertical: 15,
         paddingHorizontal: 25,
@@ -149,10 +140,9 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     callButtonText: {
-        color: '#1C1A1B', // Dark text
+        color: '#1C1A1B',
         fontSize: 18,
     },
-
     friendsNotifiedSection: {
         backgroundColor: '#252222',
         borderRadius: 15,

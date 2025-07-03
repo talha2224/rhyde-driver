@@ -13,7 +13,7 @@ const Subscription = () => {
       duration: 'year',
       pointsRange: '0-999',
       features: [
-        'Earn points on every all',
+        'Earn points on all',
         'Access to referral bonuses',
       ],
     },

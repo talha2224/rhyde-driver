@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 const Otp = () => {
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [otp, setOtp] = useState(['', '', '', '']);
 
     const inputRefs = useRef([]);
 
@@ -24,10 +24,10 @@ const Otp = () => {
         const newOtp = [...otp];
         newOtp[index] = text;
         setOtp(newOtp);
-        if (text !== '' && index < 5) {
+        if (text !== '' && index < 3) {
             inputRefs.current[index + 1].focus();
         }
-        if (index === 5 && text !== '') {
+        if (index === 3 && text !== '') {
             Keyboard.dismiss();
         }
     };
@@ -141,15 +141,16 @@ const styles = StyleSheet.create({
     },
     otpInputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent:"center",
         marginBottom: 40,
         width: '100%',
+        gap:20
     },
     otpInput: {
         width: 50,
         height: 55,
         backgroundColor: '#1C1A1B',
-        borderRadius: 15,
+        borderRadius:5,
         color: 'white',
         fontSize: 24,
         fontWeight: 'bold',

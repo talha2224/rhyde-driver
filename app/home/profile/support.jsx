@@ -15,8 +15,8 @@ const Support = () => {
     },
     {
       id: '2',
-      question: 'Can I schedule a ride in advance?',
-      answer: "Yes, you can schedule a ride up to 48 hours in advance using the 'Schedule ryde' option.",
+      question: 'Can I schedule a ryde in advance?',
+      answer: "Yes, you can schedule a ryde up to 48 hours in advance using the 'Schedule ryde' option.",
     },
     {
       id: '3',
@@ -51,7 +51,7 @@ const Support = () => {
           <Image source={supportImg} style={styles.supportImage} />
           <Text style={styles.supportQuestion}>What would you like us to help you with?</Text>
           <Text style={styles.supportHelperText}>
-            Help us improve your experience by letting us know the reason for cancelling this ryde.
+            Help us improve your experience by letting us know the reason for cancelling your ryde.
           </Text>
         </View>
 

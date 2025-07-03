@@ -167,7 +167,7 @@ const styles = StyleSheet.create({
   statusToggleContainer: { flexDirection: 'row', alignItems: 'center' },
   statusText: { color: '#FFF', marginRight: 8, fontSize: 16 },
   mapContainer: {
-    height: 500,
+    height: 400,
     borderRadius: 15,
     overflow: 'hidden',
     marginHorizontal: 20,

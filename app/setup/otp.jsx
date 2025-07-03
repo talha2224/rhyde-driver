@@ -13,7 +13,7 @@ import {
 import DocumentImg from "../../assets/images/onboarding/document.png";
 
 const Otp = () => {
-    const [otp, setOtp] = useState(['', '', '', '', '', '']);
+    const [otp, setOtp] = useState(['', '', '', '']);
     const inputRefs = useRef([]);
 
     const handleOtpChange = (text, index) => {
@@ -23,10 +23,10 @@ const Otp = () => {
         const newOtp = [...otp];
         newOtp[index] = text;
         setOtp(newOtp);
-        if (text !== '' && index < 5) {
+        if (text !== '' && index < 3) {
             inputRefs.current[index + 1].focus();
         }
-        if (index === 5 && text !== '') {
+        if (index === 3 && text !== '') {
             Keyboard.dismiss();
         }
     };
@@ -154,16 +154,16 @@ const styles = StyleSheet.create({
     },
     otpInputContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent:"center",
         marginBottom: 40,
         width: '100%',
-        gap: 10,
+        gap:20
     },
     otpInput: {
         width: 50,
         height: 50,
         backgroundColor: '#2A2A2A',
-        borderRadius: 150,
+        borderRadius: 10,
         color: '#FFF',
         fontSize: 24,
         fontWeight: 'bold',

@@ -4,14 +4,18 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const Language = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState('English Language');
+  const [selectedLanguage, setSelectedLanguage] = useState('English');
 
   const languages = [
-    { id: '1', name: 'English Language', emoji: '😀' },
+    { id: '1', name: 'English', emoji: '😀' },
     { id: '2', name: 'French', emoji: '' },
     { id: '3', name: 'German', emoji: '' },
     { id: '4', name: 'Spanish', emoji: '' },
     { id: '5', name: 'Polish', emoji: '' },
+    { id: '6', name: 'Ukranian', emoji: '' },
+    { id: '7', name: 'Arabic', emoji: '' },
+    { id: '8', name: 'Russian', emoji: '' },
+    { id: '9', name: 'Chinesse', emoji: '' },
   ];
 
   return (

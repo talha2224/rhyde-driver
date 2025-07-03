@@ -10,7 +10,7 @@ const Report = () => {
   const handleSubmitReport = () => {
     console.log('Report submitted:', message);
     ToastAndroid.show('Report sent!',ToastAndroid.SHORT);
-    router.back();
+    router.push("/home/buddy");
   };
 
   return (

@@ -47,8 +47,8 @@ const Profile = () => {
       </View>
 
       <Text style={styles.feedbackTitle}>Feedback & reviews</Text>
-      <View style={styles.feedbackFilter}>
-        {['Verified', 'Latest', 'Neutral'].map((label, index) => (
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.feedbackFilter}>
+        {['Verified', 'Latest','New','Previous', 'Neutral'].map((label, index) => (
           <TouchableOpacity
             key={index}
             style={[styles.filterButton, label === 'Verified' && { backgroundColor: "#FBB73A" }]}
@@ -56,7 +56,7 @@ const Profile = () => {
             <Text style={[styles.filterButtonText, label === 'Verified' && { color: "#000" }]}>{label}</Text>
           </TouchableOpacity>
         ))}
-      </View>
+      </ScrollView>
 
       {reviewsData.feedback.map((item) => (
         <View key={item.id} style={styles.feedbackItem}>
@@ -87,9 +87,7 @@ const Profile = () => {
       {milestonesData.map((milestone) => (
         <View key={milestone.id} style={styles.milestoneItem}>
           <View style={styles.milestoneIconText}>
-            {milestone.reached
-              ? <AntDesign name="checkcircle" size={24} color="#FBB73A" style={{ marginRight: 15 }} />
-              : <Image source={badgeImg} style={styles.milestoneBadge} />}
+            {milestone.reached ? <AntDesign name="checkcircle" size={24} color="#FBB73A" style={{ marginRight: 15 }} /> : <Image source={badgeImg} style={styles.milestoneBadge} />}
           </View>
           <View style={styles.milestoneDetails}>
             <Text style={styles.milestoneTitle}>{milestone.title}</Text>
@@ -334,7 +332,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   feedbackFilter: {
-    flexDirection: 'row',
+    // flexDirection: 'row',
     marginBottom: 15,
   },
   filterButton: {
@@ -430,7 +428,6 @@ const styles = StyleSheet.create({
   milestoneIconText: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
   },
   milestoneBadge: {
     width: 24,

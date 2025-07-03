@@ -141,7 +141,7 @@ const ActiveBooking = () => {
             <Text style={styles.bottomSheetHeader}>Trip completed</Text>
             <Image source={badge_image} style={{marginBottom:10}}/>
             <Text style={styles.tripSuccessfulTitle}>Trip successful</Text>
-            <Text style={styles.tripSuccessfulDescription}>You've completed the trip. Kindly rate the ryder</Text>
+            <Text style={styles.tripSuccessfulDescription}>You've completed the trip. Kindly rate your ryder</Text>
             <TouchableOpacity style={styles.actionButton} onPress={handleRateRyder}>
                 <Text style={styles.actionButtonText}>Rate ryder</Text>
             </TouchableOpacity>
@@ -405,7 +405,7 @@ const styles = StyleSheet.create({
     tripSuccessfulDescription: {
         fontSize: 16,
         color: '#AAA',
-        marginBottom: 30,
+        marginBottom: 15,
         textAlign: 'center',
         paddingHorizontal: 10,
     },

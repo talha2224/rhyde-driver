@@ -62,6 +62,7 @@ export default function RootLayout() {
     "home/chat",
     "home/savedplaces",
     "home/addaddress",
+    "home/buddy",
 
     "home/booking/activebooking",
     "home/booking/cancelled",

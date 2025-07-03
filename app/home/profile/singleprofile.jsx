@@ -6,9 +6,13 @@ import profile_photo from "../../../assets/images/profile_photo.png";
 const SingleProfile = () => {
   const userDetails = {
     name: 'Paul Cleverly',
-    location: 'Kingston, Jamaica',
-    email: 'paulcler@gmail.com',
+    age: 30, // Added age
     gender: 'Male',
+    ethnicity: 'Caucasian', // Added ethnicity
+    phoneNumber: '+1 (876) 555-1234', // Added phone number
+    address: '123 Main Street, Kingston', // Added address
+    location: 'Kingston, Jamaica',
+    email: 'paulcleverly@gmail.com',
   };
 
   return (
@@ -34,25 +38,66 @@ const SingleProfile = () => {
           <Text style={styles.userLocation}>{userDetails.location}</Text>
         </View>
 
-        {/* My Details Section */}
         <View style={styles.detailsSection}>
           <Text style={styles.sectionTitle}>My Details</Text>
+
+          {/* Name */}
+          <TouchableOpacity style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Name</Text>
+            <Text style={styles.detailValue}>{userDetails.name}</Text>
+            <AntDesign name="right" size={16} color="#AAA" />
+          </TouchableOpacity>
+
+          {/* Email Address */}
           <TouchableOpacity style={styles.detailItem}>
             <Text style={styles.detailLabel}>Email Address</Text>
             <Text style={styles.detailValue}>{userDetails.email}</Text>
             <AntDesign name="right" size={16} color="#AAA" />
           </TouchableOpacity>
+
+          {/* Age */}
+          <TouchableOpacity style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Age</Text>
+            <Text style={styles.detailValue}>{userDetails.age}</Text>
+            <AntDesign name="right" size={16} color="#AAA" />
+          </TouchableOpacity>
+
+          {/* Gender */}
           <TouchableOpacity style={styles.detailItem}>
             <Text style={styles.detailLabel}>Gender</Text>
             <Text style={styles.detailValue}>{userDetails.gender}</Text>
             <AntDesign name="right" size={16} color="#AAA" />
           </TouchableOpacity>
+
+          {/* Ethnicity */}
+          <TouchableOpacity style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Ethnicity</Text>
+            <Text style={styles.detailValue}>{userDetails.ethnicity}</Text>
+            <AntDesign name="right" size={16} color="#AAA" />
+          </TouchableOpacity>
+
+          {/* Phone Number */}
+          <TouchableOpacity style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Phone Number</Text>
+            <Text style={styles.detailValue}>{userDetails.phoneNumber}</Text>
+            <AntDesign name="right" size={16} color="#AAA" />
+          </TouchableOpacity>
+
+          {/* Address */}
+          <TouchableOpacity style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Address</Text>
+            <Text style={styles.detailValue}>{userDetails.address}</Text>
+            <AntDesign name="right" size={16} color="#AAA" />
+          </TouchableOpacity>
+
+          {/* Location */}
           <TouchableOpacity style={styles.detailItem}>
             <Text style={styles.detailLabel}>Location</Text>
             <Text style={styles.detailValue}>{userDetails.location}</Text>
             <AntDesign name="right" size={16} color="#AAA" />
           </TouchableOpacity>
         </View>
+
       </ScrollView>
     </View>
   );

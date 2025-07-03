@@ -10,8 +10,8 @@ export const slides = [
     id: 1,
     image: onboardingImages[1],
     logo: logo,
-    title: 'Earn Rewards  Every Mile',
-    description: 'Collect loyalty points, referral bonuses, and unlock ride discounts easily.',
+    title: 'Earn Rewards Every Mile',
+    description: 'Collect loyalty points, referral bonuses, and unlock ryde discounts easily.',
     buttonText: 'Get Started',
   }
 ];

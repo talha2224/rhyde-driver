@@ -13,7 +13,7 @@ const Subscription = () => {
       duration: 'year',
       pointsRange: '0-999',
       features: [
-        'Earn points on every rydes',
+        'Earn points on every all',
         'Access to referral bonuses',
       ],
     },
@@ -28,12 +28,13 @@ const Subscription = () => {
     },
     Gold: {
       price: '$59.99',
-      duration: 'year',
+      duration: 'month',
       pointsRange: '5000-9999',
       features: [
-        '10% off all rydes',
+        '10% off all your rydes',
         'Free luxury rydes match and assign (up to 3)',
         'Double points on holidays',
+        '1 free ryde upto $20',
       ],
     },
     Diamond: {

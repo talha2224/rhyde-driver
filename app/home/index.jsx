@@ -123,7 +123,7 @@ const Home = () => {
             <View style={styles.statIconBox}>
               <MaterialCommunityIcons name="map-marker-distance" size={24} color="#FFD700" />
             </View>
-            <Text style={styles.statValue}>25 km</Text>
+            <Text style={styles.statValue}>25 miles</Text>
             <Text style={styles.statLabel}>Distance Covered</Text>
           </View>
           <View style={styles.statItem}>

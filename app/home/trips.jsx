@@ -1,13 +1,13 @@
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
-  Image,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    ScrollView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import userImg from '../../assets/images/home/user.png';
 import BottomNavbar from '../../components/BottomNavbar';
@@ -21,7 +21,7 @@ const Trips = () => {
     price: '$230.78',
     pickup: '4517 Washington Ave. Manchester...',
     destination: '2118 Thornridge Cir. Syracuse...',
-    distance: '5.7 Km',
+    distance: '5.7 miles',
     date: '15 March, 2025',
     duration: '30 Mins',
   };

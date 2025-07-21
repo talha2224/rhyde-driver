@@ -6,6 +6,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -93,6 +94,7 @@ export default function RootLayout() {
           <Stack.Screen key={name} name={name} />
         ))}
       </Stack>
+      <Toast />
       <StatusBar style="auto" />
     </ThemeProvider>
 

@@ -1,4 +1,5 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { useState } from "react";
@@ -51,11 +52,21 @@ const VerifyLicense = () => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setLicenseImageUri(result.assets[0].uri);
-      ToastAndroid.show("License Uploaded", ToastAndroid.SHORT);
+      const imageData = result.assets[0];
+      setLicenseImageUri(imageData.uri);
+
+      try {
+        await AsyncStorage.setItem('license_img', JSON.stringify(imageData));
+        ToastAndroid.show("License Uploaded", ToastAndroid.SHORT);
+      } catch (err) {
+        console.error("Failed to save license image:", err);
+        ToastAndroid.show("Error saving license", ToastAndroid.SHORT);
+      }
     } else {
       ToastAndroid.show("Image Not Selected", ToastAndroid.SHORT);
     }
+
+
   };
 
   const handleGoBack = () => {

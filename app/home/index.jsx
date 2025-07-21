@@ -1,11 +1,12 @@
 import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { Dimensions, Image, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { router } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Dimensions, Image, Modal, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
 import mapImg from '../../assets/images/home/map.png';
-import profile_image from '../../assets/images/profile_photo.png';
 import BottomNavbar from '../../components/BottomNavbar';
+import config from '../../config';
 import { rydeRequests } from '../../constants/constant';
 const { height, width } = Dimensions.get('window');
 
@@ -31,6 +32,28 @@ const Home = () => {
   const handleIgnoreRide = () => {
     setShowRydeRequestsModal(true);
   };
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (!userId) return;
+
+        const response = await axios.get(`${config.baseUrl}/driver/info/${userId}`);
+        if (response.status === 201 && response.data?.data) {
+          setUser(response.data.data);
+        }
+      } catch (error) {
+        console.log('Failed to fetch user:', error?.response?.data || error.message);
+      }
+    };
+
+    fetchUser();
+  }, []);
+
+  console.log(user?.profile_img,'user')
 
   const RydeRequestsModal = ({ visible, onClose, requests, onAccept, onIgnore }) => (
     <Modal
@@ -89,10 +112,10 @@ const Home = () => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.header}>
           <View style={styles.userInfo}>
-            <Image source={profile_image} style={styles.profileAvatar} />
+            <Image source={{uri:user?.profile_img}} style={styles.profileAvatar} />
             <View>
               <Text style={styles.greeting}>Welcome back!</Text>
-              <Text style={styles.userName}>Michael</Text>
+              <Text style={styles.userName}>{user?.name}</Text>
             </View>
           </View>
           <View style={styles.statusToggleContainer}>

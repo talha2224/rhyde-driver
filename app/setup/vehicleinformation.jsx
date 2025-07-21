@@ -18,6 +18,7 @@ import {
   View
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import folderImg from "../../assets/images/onboarding/folder.png";
 
 const dropdownData = {
@@ -51,15 +52,26 @@ const VehicleInformation = () => {
     router.back();
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!vehicleMake || !vehicleModel || !color || !licensePlateNumber) {
-      ToastAndroid.show('Please fill in all vehicle details to continue.',ToastAndroid.SHORT);
+      ToastAndroid.show('Please fill in all vehicle details to continue.', ToastAndroid.SHORT);
       return;
     }
-    console.log('Vehicle Info:', {vehicleMake,vehicleModel,color,licensePlateNumber});
 
-    router.push('/setup/vehicledocuments');
+    try {
+      await AsyncStorage.setItem('vehicle_make', vehicleMake);
+      await AsyncStorage.setItem('vehicle_model', vehicleModel);
+      await AsyncStorage.setItem('vehicle_color', color);
+      await AsyncStorage.setItem('vehicle_license_plate', licensePlateNumber);
+
+      ToastAndroid.show('Vehicle Info Saved', ToastAndroid.SHORT);
+      router.push('/setup/vehicledocuments');
+    } catch (error) {
+      console.error('Error saving vehicle info:', error);
+      ToastAndroid.show('Failed to save vehicle info', ToastAndroid.SHORT);
+    }
   };
+
 
   const isNextButtonEnabled = vehicleMake && vehicleModel && color && licensePlateNumber;
 

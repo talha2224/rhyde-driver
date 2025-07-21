@@ -1,17 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Image // Added Image for the document icon
-    ,
-
-
-
-
-
-
-
-
-
+    Image,
     StatusBar,
     StyleSheet,
     Text,
@@ -20,7 +10,8 @@ import {
     View
 } from 'react-native';
 
-import DocumentImg from "../../assets/images/onboarding/document.png"; // Assuming this path is correct
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import DocumentImg from "../../assets/images/onboarding/document.png";
 
 const FullName = () => {
     const [fullName, setFullName] = useState('');
@@ -29,8 +20,15 @@ const FullName = () => {
         router.back();
     };
 
-    const handleNext = () => {
-        router.push('/setup/phone');
+    const handleNext = async () => {
+        if (!fullName) return;
+
+        try {
+            await AsyncStorage.setItem('name', fullName);
+            router.push('/setup/phone');
+        } catch (err) {
+            console.error("Error storing full name:", err);
+        }
     };
 
     return (
@@ -66,7 +64,7 @@ const FullName = () => {
                 >
                     <Text style={styles.nextButtonText}>Next</Text>
                 </TouchableOpacity>
-                
+
                 {/* Cancel Button */}
                 <TouchableOpacity onPress={handleGoBack} style={styles.cancelButton}>
                     <Text style={styles.cancelButtonText}>Cancel</Text>

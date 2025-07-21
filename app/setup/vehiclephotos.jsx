@@ -3,23 +3,31 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Image,
-    Platform,
-    StatusBar,
-    StyleSheet,
-    Text,
-    ToastAndroid,
-    TouchableOpacity,
-    View,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import Toast from 'react-native-toast-message';
 import folderImg from "../../assets/images/onboarding/folder.png";
+import config from '../../config';
 
 const VehiclePhotos = () => {
   const [frontViewUri, setFrontViewUri] = useState(null);
   const [sideViewUri, setSideViewUri] = useState(null);
   const [backViewUri, setBackViewUri] = useState(null);
   const [insideViewUri, setInsideViewUri] = useState(null);
+  const [frontViewData, setFrontViewData] = useState(null);
+  const [sideViewData, setSideViewData] = useState(null);
+  const [backViewData, setBackViewData] = useState(null);
+  const [insideViewData, setInsideViewData] = useState(null);
 
   const requestMediaLibraryPermission = async () => {
     if (Platform.OS !== 'web') {
@@ -35,7 +43,7 @@ const VehiclePhotos = () => {
     return true;
   };
 
-  const pickImage = async (setImageUri, imageType) => {
+  const pickImage = async (setImageUri, setImageData, imageType) => {
     const hasPermission = await requestMediaLibraryPermission();
     if (!hasPermission) return;
 
@@ -47,32 +55,91 @@ const VehiclePhotos = () => {
     });
 
     if (!result.canceled && result.assets?.length > 0) {
-      setImageUri(result.assets[0].uri);
+      const image = result.assets[0];
+      setImageUri(image.uri);
+      setImageData(image);
       ToastAndroid.show(`${imageType} photo selected!`, ToastAndroid.SHORT);
     } else {
       ToastAndroid.show(`No photo selected for ${imageType}`, ToastAndroid.SHORT);
     }
   };
 
+
   const handleGoBack = () => {
     router.back();
   };
 
-  const handleNext = () => {
-    if (!frontViewUri || !sideViewUri || !backViewUri || !insideViewUri) {
+  const handleNext = async () => {
+    if (!frontViewData || !sideViewData || !backViewData || !insideViewData) {
       ToastAndroid.show('Please upload all four vehicle photos', ToastAndroid.SHORT);
       return;
     }
 
-    console.log('Vehicle Photos:', {
-      frontViewUri,
-      sideViewUri,
-      backViewUri,
-      insideViewUri,
-    });
+    try {
+      Toast.show({ type: 'info', text1: 'Uploading, please wait...' });
 
-    router.push('/setup/success');
+      // Save images to AsyncStorage
+      await AsyncStorage.setItem('front_view_img', JSON.stringify(frontViewData));
+      await AsyncStorage.setItem('side_view_img', JSON.stringify(sideViewData));
+      await AsyncStorage.setItem('back_view_img', JSON.stringify(backViewData));
+      await AsyncStorage.setItem('inside_view_img', JSON.stringify(insideViewData));
+
+      // Retrieve all values from AsyncStorage
+      const userId = await AsyncStorage.getItem('userId');
+      const name = await AsyncStorage.getItem('name');
+      const phone_number = await AsyncStorage.getItem('phone_number');
+      const profile_img = JSON.parse(await AsyncStorage.getItem('profile_img'));
+      const license_img = JSON.parse(await AsyncStorage.getItem('license_img'));
+      const vehicle_make = await AsyncStorage.getItem('vehicle_make');
+      const vehicle_model = await AsyncStorage.getItem('vehicle_model');
+      const vehicle_color = await AsyncStorage.getItem('vehicle_color');
+      const vehicle_license_plate = await AsyncStorage.getItem('vehicle_license_plate');
+      const vehicle_registration_img = JSON.parse(await AsyncStorage.getItem('vehicle_registration_img'));
+      const insurance_document_img = JSON.parse(await AsyncStorage.getItem('insurance_document_img'));
+
+      const formData = new FormData();
+
+      const appendImage = (key, img) => {
+        formData.append(key, {
+          uri: img.uri,
+          name: img.fileName || 'image.jpg',
+          type: img.mimeType || 'image/jpeg',
+        });
+      };
+
+      appendImage('profile_img', profile_img);
+      appendImage('license_img', license_img);
+      appendImage('vehicle_registration_img', vehicle_registration_img);
+      appendImage('insurance_document_img', insurance_document_img);
+      appendImage('front_view_img', frontViewData);
+      appendImage('side_view_img', sideViewData);
+      appendImage('back_view_img', backViewData);
+      appendImage('inside_view_img', insideViewData);
+
+      formData.append('name', name);
+      formData.append('phone_number', phone_number);
+      formData.append('make', vehicle_make);
+      formData.append('model', vehicle_model);
+      formData.append('color', vehicle_color);
+      formData.append('license_plate_number', vehicle_license_plate);
+
+      const res = await axios.put(`${config.baseUrl}/driver/update/${userId}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      if (res.status === 200) {
+        Toast.show({ type: 'success', text1: 'Profile updated successfully' });
+        router.push('/setup/success');
+      } else {
+        Toast.show({ type: 'error', text1: 'Failed to update profile' });
+      }
+
+    } catch (error) {
+      console.error('Error submitting data:', error);
+      Toast.show({ type: 'error', text1: 'Something went wrong' });
+    }
   };
+
 
   const isNextButtonEnabled = frontViewUri && sideViewUri && backViewUri && insideViewUri;
 
@@ -93,7 +160,7 @@ const VehiclePhotos = () => {
         <View style={styles.uploadButtonsGrid}>
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickImage(setFrontViewUri, 'Front View')}
+            onPress={() => pickImage(setFrontViewUri, setFrontViewData, 'Front View')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={30} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Front View</Text>
@@ -102,7 +169,7 @@ const VehiclePhotos = () => {
 
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickImage(setSideViewUri, 'Side View')}
+            onPress={() => pickImage(setSideViewUri, setSideViewData, 'Side View')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={30} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Side View</Text>
@@ -111,7 +178,7 @@ const VehiclePhotos = () => {
 
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickImage(setBackViewUri, 'Back View')}
+            onPress={() => pickImage(setBackViewUri, setBackViewData, 'Back View')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={30} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Back View</Text>
@@ -120,7 +187,7 @@ const VehiclePhotos = () => {
 
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickImage(setInsideViewUri, 'Inside View')}
+            onPress={() => pickImage(setInsideViewUri, setInsideViewData, 'Inside View')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={30} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Inside View</Text>

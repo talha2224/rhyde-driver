@@ -1,14 +1,7 @@
-import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Image // Added Image for the phone icon
-    ,
-
-
-
-
-    StatusBar,
+    Image, StatusBar,
     StyleSheet,
     Text,
     TextInput,
@@ -16,17 +9,25 @@ import {
     View
 } from 'react-native';
 
-import phoneImg from "../../assets/images/onboarding/phone.png"; // Assuming this path is correct
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import phoneImg from "../../assets/images/onboarding/phone.png";
 
 const Phone = () => {
-    const [phoneNumber, setPhoneNumber] = useState(''); // Changed from fullName to phoneNumber
+    const [phoneNumber, setPhoneNumber] = useState('');
 
     const handleGoBack = () => {
         router.back();
     };
 
-    const handleNext = () => {
-        router.push('/setup/otp');
+    const handleNext = async () => {
+        if (!phoneNumber) return;
+
+        try {
+            await AsyncStorage.setItem('phone_number', phoneNumber);
+            router.push('/setup/otp')
+        } catch (err) {
+            console.error("Error storing phone number:", err);
+        }
     };
 
     return (
@@ -47,11 +48,6 @@ const Phone = () => {
                 <Text style={styles.description}>We’ll use your number and email to send ryde updates and receipts.</Text>
 
                 <View style={styles.inputContainer}>
-                    {/* Country Code Selector (simplified for UI, actual implementation would be more complex) */}
-                    <TouchableOpacity style={styles.countryCodeDropdown}>
-                        <Text style={styles.countryCodeText}>+1</Text>
-                        <Ionicons name="chevron-down" size={16} color="#FFF" />
-                    </TouchableOpacity>
                     <TextInput
                         style={styles.input}
                         placeholder="Enter phone number" // Updated placeholder as per image
@@ -71,7 +67,7 @@ const Phone = () => {
             >
                 <Text style={styles.nextButtonText}>Next</Text>
             </TouchableOpacity>
-            
+
             {/* Previous Button (matching the style of the "Cancel" button in FullName) */}
             <TouchableOpacity onPress={handleGoBack} style={styles.previousButton}>
                 <Text style={styles.previousButtonText}>Previous</Text>

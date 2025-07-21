@@ -3,23 +3,25 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Image,
-    Platform,
-    StatusBar,
-    StyleSheet,
-    Text,
-    ToastAndroid,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  Platform,
+  StatusBar,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import folderImg from "../../assets/images/onboarding/folder.png";
 
 const VehicleDocuments = () => {
   const [registrationDocUri, setRegistrationDocUri] = useState(null);
   const [insuranceDocUri, setInsuranceDocUri] = useState(null);
-
+  const [registrationDocData, setRegistrationDocData] = useState(null);
+  const [insuranceDocData, setInsuranceDocData] = useState(null);
   const requestMediaLibraryPermission = async () => {
     if (Platform.OS !== 'web') {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -35,7 +37,7 @@ const VehicleDocuments = () => {
     return true;
   };
 
-  const pickDocument = async (setDocumentUri, docType) => {
+  const pickDocument = async (setDocumentUri, setFullData, docType) => {
     const hasPermission = await requestMediaLibraryPermission();
     if (!hasPermission) return;
 
@@ -47,30 +49,38 @@ const VehicleDocuments = () => {
     });
 
     if (!result.canceled && result.assets?.length > 0) {
-      setDocumentUri(result.assets[0].uri);
-      ToastAndroid.show('Document Uploaded', ToastAndroid.SHORT);
+      const image = result.assets[0];
+      setDocumentUri(image.uri);
+      setFullData(image);
+      ToastAndroid.show(`${docType} Uploaded`, ToastAndroid.SHORT);
     } else {
       Alert.alert('Document Not Selected', `No document was selected for ${docType}.`);
     }
   };
 
+
   const handleGoBack = () => {
     router.back();
   };
 
-  const handleNext = () => {
-    if (!registrationDocUri || !insuranceDocUri) {
+  const handleNext = async () => {
+    if (!registrationDocData || !insuranceDocData) {
       Alert.alert('Missing Documents', 'Please upload both Vehicle Registration and Insurance Document to continue.');
       return;
     }
 
-    console.log('Vehicle Documents:', {
-      registrationDocUri,
-      insuranceDocUri,
-    });
+    try {
+      await AsyncStorage.setItem('vehicle_registration_img', JSON.stringify(registrationDocData));
+      await AsyncStorage.setItem('insurance_document_img', JSON.stringify(insuranceDocData));
 
-    router.push('/setup/vehiclephotos');
+      ToastAndroid.show('Documents Saved', ToastAndroid.SHORT);
+      router.push('/setup/vehiclephotos');
+    } catch (error) {
+      console.error('Error saving vehicle documents:', error);
+      ToastAndroid.show('Failed to save documents', ToastAndroid.SHORT);
+    }
   };
+
 
   const isNextButtonEnabled = registrationDocUri && insuranceDocUri;
 
@@ -90,7 +100,7 @@ const VehicleDocuments = () => {
         <View style={styles.uploadButtonsContainer}>
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickDocument(setRegistrationDocUri, 'Vehicle Registration')}
+            onPress={() => pickDocument(setRegistrationDocUri, setRegistrationDocData, 'Vehicle Registration')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={40} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Upload vehicle registration</Text>
@@ -101,7 +111,7 @@ const VehicleDocuments = () => {
 
           <TouchableOpacity
             style={styles.uploadOptionButton}
-            onPress={() => pickDocument(setInsuranceDocUri, 'Insurance Document')}
+            onPress={() => pickDocument(setInsuranceDocUri, setInsuranceDocData, 'Insurance Document')}
           >
             <MaterialCommunityIcons name="cloud-upload" size={40} color="#FBB73A" />
             <Text style={styles.uploadOptionText}>Insurance Document</Text>

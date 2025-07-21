@@ -1,4 +1,6 @@
 import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -11,20 +13,45 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-
-// Assuming you have a background image for these screens (optional)
-// import authBackground from '../../../assets/images/auth_background.png';
+import Toast from 'react-native-toast-message';
+import config from '../config';
 
 const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState(''); // Added for signup
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSignUp = () => {
-        console.log('Sign up pressed with:', { email, password, confirmPassword });
-        router.push("/setup");
+    const handleSignUp = async () => {
+        if (!email || !password || !confirmPassword) {
+            return Toast.show({type: 'error',text1: 'Missing Fields',text2: 'Please fill in all fields.',});
+        }
+
+        if (password !== confirmPassword) {
+            return Toast.show({type: 'error',text1: 'Password Mismatch',text2: 'Passwords do not match.',});
+        }
+
+        try {
+            Toast.show({type: 'info',text1: 'Registering...',});
+
+            const response = await axios.post(`${config.baseUrl}/driver/register`, {email,password,});
+
+            if (response.status === 200) {
+                const { data } = response.data;
+                await AsyncStorage.setItem('userId', data._id);
+                await AsyncStorage.setItem('email', data.email);
+                Toast.show({type: 'success',text1: 'Registration Successful',text2: 'Please complete your profile.',});
+                setTimeout(() => {
+                    router.push('/setup');
+                }, 2000);
+            }
+        } catch (error) {
+            const msg = error?.response?.data?.msg || 'Something went wrong. Please try again.';
+            Toast.show({type: 'error',text1: 'Registration Failed',text2: msg,});
+        }
     };
+
+
 
     const handleSignIn = () => {
         router.push("/signin");
@@ -140,7 +167,7 @@ const Signup = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000', // Set a default black background
+        backgroundColor: '#000',
     },
     inner: {
         flex: 1,
@@ -165,8 +192,8 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 25,
         alignItems: 'center',
         paddingHorizontal: 25,
-        paddingBottom: 50, 
-        marginTop:50
+        paddingBottom: 50,
+        marginTop: 50
     },
     welcomeText: {
         fontSize: 28,

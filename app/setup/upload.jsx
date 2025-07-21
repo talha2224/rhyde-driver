@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -23,9 +24,7 @@ const Upload = () => {
   const takePhotoForVerification = async () => {
     const hasCameraPermission = await requestCameraPermission();
 
-    if (!hasCameraPermission) {
-      return;
-    }
+    if (!hasCameraPermission) return;
 
     let result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -34,15 +33,26 @@ const Upload = () => {
       quality: 1,
     });
 
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      console.log('Photo taken URI:', result.assets[0].uri);
-      setIsVerified(true);
-      ToastAndroid.show('Photo Captured', ToastAndroid.SHORT);
-      router.push('/setup/vehicle');
+    if (!result.canceled && result.assets?.length > 0) {
+      const imageData = result.assets[0]
+
+      console.log(imageData,'imageData')
+
+      try {
+        await AsyncStorage.setItem('profile_img', JSON.stringify(imageData));
+        ToastAndroid.show('Photo Captured & Saved', ToastAndroid.SHORT);
+        setIsVerified(true);
+        router.push('/setup/vehicle');
+      } catch (error) {
+        console.error('Failed to store profile image:', error);
+        ToastAndroid.show('Error saving image', ToastAndroid.SHORT);
+      }
+
     } else {
       ToastAndroid.show('Photo Not Captured', ToastAndroid.SHORT);
     }
   };
+
 
   const handleGoBack = () => {
     router.back();

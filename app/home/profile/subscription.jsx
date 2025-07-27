@@ -1,11 +1,17 @@
 import { AntDesign } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useStripe } from '@stripe/stripe-react-native';
+import axios from 'axios';
+import { useRouter } from 'expo-router'; // assuming router is from expo-router
 import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 import subscriptionIcon from "../../../assets/images/subscriptionIcon.png";
+import config from '../../../config'; // Ensure this contains your baseUrl
 
 const Subscription = () => {
   const [selectedTier, setSelectedTier] = useState('Bronze');
+  const stripe = useStripe();
+  const router = useRouter();
 
   const subscriptionTiers = {
     Bronze: {
@@ -40,7 +46,7 @@ const Subscription = () => {
     Diamond: {
       price: '$99.99',
       duration: 'year',
-      pointsRange: '5000-9999', // Image shows same range as Gold, adjust if needed
+      pointsRange: '5000-9999',
       features: [
         '15% off all rydes',
         'VIP concierge support',
@@ -52,9 +58,40 @@ const Subscription = () => {
 
   const currentTierData = subscriptionTiers[selectedTier];
 
-  const handleSubscribe = () => {
-    console.log(`Subscribing to ${selectedTier} tier for ${currentTierData.price}/${currentTierData.duration}`);
-    ToastAndroid.SHORT(`Subscribed to ${selectedTier} tier!`,ToastAndroid.SHORT);
+  const handleSubscribe = async () => {
+    try {
+      const userId = await AsyncStorage.getItem("userId");
+      if (!userId) throw new Error("User not logged in");
+
+      const price = currentTierData.price.replace("$", "");
+      const amountInCents = Math.floor(parseFloat(price) * 100);
+
+      // Create Payment Intent
+      const res = await axios.post(`${config.baseUrl}/payment/create`, {
+        amount: amountInCents,
+        id: userId,
+      });
+
+      const clientSecret = res.data?.clientSecret;
+
+      // Initialize Stripe Payment Sheet
+      const init = await stripe.initPaymentSheet({
+        merchantDisplayName: "Ryde Subscriptions",
+        paymentIntentClientSecret: clientSecret,
+      });
+
+      if (init.error) throw new Error(init.error.message);
+
+      // Present Payment Sheet
+      const result = await stripe.presentPaymentSheet();
+      if (result.error) throw new Error(result.error.message);
+
+      ToastAndroid.show(`Subscribed to ${selectedTier} Tier!`, ToastAndroid.SHORT);
+      router.back()
+    } catch (err) {
+      console.error("Subscription error:", err);
+      ToastAndroid.show(err.message || "Subscription failed", ToastAndroid.SHORT);
+    }
   };
 
   return (
@@ -102,7 +139,9 @@ const Subscription = () => {
         {/* Selected Tier Details */}
         {currentTierData && (
           <View style={styles.tierDetailsCard}>
-            <Text style={styles.tierPrice}>{currentTierData.price} <Text style={styles.tierDuration}>/{currentTierData.duration}</Text></Text>
+            <Text style={styles.tierPrice}>
+              {currentTierData.price} <Text style={styles.tierDuration}>/{currentTierData.duration}</Text>
+            </Text>
             <Text style={styles.tierPointsRange}>
               {selectedTier} Tier ({currentTierData.pointsRange} Points)
             </Text>
@@ -123,6 +162,8 @@ const Subscription = () => {
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {

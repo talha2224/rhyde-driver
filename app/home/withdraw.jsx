@@ -1,7 +1,7 @@
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
 
 const Withdraw = () => {
   const [amount, setAmount] = useState('');
@@ -72,7 +72,7 @@ const Withdraw = () => {
         </TouchableOpacity>
 
         {/* Top-up Button */}
-        <TouchableOpacity style={styles.topUpButton}>
+        <TouchableOpacity onPress={()=>{ToastAndroid.show("Withdraw Request Send To Admin",ToastAndroid.SHORT);router.back()}} style={styles.topUpButton}>
           <Text style={styles.topUpButtonText}>Withdraw</Text>
         </TouchableOpacity>
       </ScrollView>

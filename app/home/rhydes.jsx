@@ -82,7 +82,32 @@ const Rhydes = () => {
         </View>
     );
 };
-
+// const handleStripPayment = async () => {
+//     try {
+//         let driverId = await AsyncStorage.getItem('driverId');
+//         let res = await axios.post(`${config.baseUrl}/payment/create`, { amount: Math.floor(amountDue * 100), id: driverId })
+//         let secret = res?.data?.clientSecret
+//         const initResponse = await initPaymentSheet({ merchantDisplayName: userName, paymentIntentClientSecret: secret })
+//         if (initResponse.error) {
+//             Alert.alert(initResponse?.error?.message)
+//             return
+//         }
+//         else {
+//             const paymentResponse = await presentPaymentSheet()
+//             if (paymentResponse.error) {
+//                 Alert.alert(paymentResponse?.error?.message)
+//                 return
+//             }
+//             else {
+//                 let updateBalance = await axios.put(`${config.baseUrl}/driver/update/balance/${driverId}`)
+//                 await getPendingPayment()
+//             }
+//         }
+//     }
+//     catch (error) {
+//         console.log(error, 'error in handling stripe payment')
+//     }
+// }
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -105,7 +130,7 @@ const styles = StyleSheet.create({
     },
     rydesList: {
         paddingHorizontal: 20,
-        marginBottom:40
+        marginBottom: 40
     },
     rydeCard: {
         borderRadius: 15,

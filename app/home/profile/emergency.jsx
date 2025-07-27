@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import {
     Image,
+    Linking,
     StatusBar,
     StyleSheet,
     Text,
@@ -22,11 +23,11 @@ const Emergency = () => {
 
     const handleCallEmergency = () => {
         setIsCalling(true);
-        console.log('Calling 911...');
-        setTimeout(() => {
-            // Optionally handle completion here
-        }, 5000);
+        const phoneNumber = `tel:${911}`;
+        Linking.openURL(phoneNumber).catch(err => console.error('Failed to open dialer:', err));
     };
+
+
 
     const friendsNotified = [
         { id: '1', name: 'Andrew Talks', avatar: userImg },

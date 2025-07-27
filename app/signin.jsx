@@ -1,4 +1,6 @@
-import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import {
@@ -11,17 +13,81 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-
+import Toast from 'react-native-toast-message';
+import config from '../config';
 
 const Signin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSignIn = () => {
-        console.log('Sign in pressed with:', { email, password });
-        router.push("/home");
+    const handleSignIn = async () => {
+        if (!email || !password) {
+            Toast.show({
+                type: 'error',
+                text1: 'Missing fields',
+                text2: 'Please enter both email and password.',
+            });
+            return;
+        }
+
+        try {
+            Toast.show({
+                type: 'info',
+                text1: 'Logging in...',
+                text2: 'Please wait.',
+                autoHide: false,
+            });
+
+            const response = await axios.post(`${config.baseUrl}/driver/login`, {
+                email,
+                password,
+            });
+
+            Toast.hide();
+
+            if (response.status === 200 && response.data?.data?._id) {
+                await AsyncStorage.setItem('userId', response.data.data._id);
+                Toast.show({type: 'success',text1: 'Login Successful',text2: 'Welcome back!',});
+                router.push('/home');
+            }
+            else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Login Failed',
+                    text2: response.data?.msg || 'Unexpected error occurred.',
+                });
+            }
+        } 
+        catch (error) {
+            Toast.hide();
+            if (error.response) {
+                const code = error.response.data?.code;
+                const msg = error.response.data?.msg;
+
+                if (code === 401) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Account Not Verified',
+                        text2: msg || 'Verification pending. Check your email.',
+                    });
+                } else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Login Error',
+                        text2: msg || 'Invalid email or password.',
+                    });
+                }
+            } else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Network Error',
+                    text2: 'Please check your internet connection.',
+                });
+            }
+        }
     };
+
 
     const handleForgotPassword = () => {
         router.push("/forgot");
@@ -50,7 +116,7 @@ const Signin = () => {
                         <Text style={styles.descriptionText}>Sign in to continue your smooth and secure ryde experience</Text>
 
                         {/* Social Sign-in Icons */}
-                        <View style={styles.socialLoginContainer}>
+                        {/* <View style={styles.socialLoginContainer}>
                             <TouchableOpacity style={styles.socialIconButton}>
                                 <AntDesign name="google" size={28} color="#FFF" />
                             </TouchableOpacity>
@@ -62,7 +128,7 @@ const Signin = () => {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.orSignInText}>Or sign in with</Text>
+                        <Text style={styles.orSignInText}>Or sign in with</Text> */}
 
                         {/* Email Input */}
                         <View style={styles.inputContainer}>
@@ -108,9 +174,9 @@ const Signin = () => {
                         </TouchableOpacity>
 
                         {/* Fingerprint icon */}
-                        <TouchableOpacity style={styles.fingerprintButton}>
+                        {/* <TouchableOpacity style={styles.fingerprintButton}>
                             <Ionicons name="finger-print-outline" size={40} color="#FFF" />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
 
                         <View style={styles.bottomLinkContainer}>
                             <Text style={styles.bottomLinkText}>Don't have an account?</Text>
@@ -128,7 +194,7 @@ const Signin = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#000', // Set a default black background
+        backgroundColor: '#000',
     },
     inner: {
         flex: 1,
@@ -247,3 +313,4 @@ const styles = StyleSheet.create({
 });
 
 export default Signin;
+

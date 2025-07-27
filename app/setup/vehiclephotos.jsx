@@ -76,7 +76,7 @@ const VehiclePhotos = () => {
     }
 
     try {
-      Toast.show({ type: 'info', text1: 'Uploading, please wait...' });
+      Toast.show({ type: 'info', text1: 'Uploading, please wait...',autoHide:false});
 
       // Save images to AsyncStorage
       await AsyncStorage.setItem('front_view_img', JSON.stringify(frontViewData));
@@ -128,8 +128,11 @@ const VehiclePhotos = () => {
       });
 
       if (res.status === 200) {
-        Toast.show({ type: 'success', text1: 'Profile updated successfully' });
-        router.push('/setup/success');
+        Toast.hide()
+        Toast.show({ type: 'success', text1: 'Profile updated successfully'});
+        setTimeout(()=>{
+          router.push('/setup/success');
+        },1000)
       } else {
         Toast.show({ type: 'error', text1: 'Failed to update profile' });
       }

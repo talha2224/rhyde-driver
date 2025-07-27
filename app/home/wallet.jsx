@@ -1,10 +1,35 @@
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import BottomNavbar from '../../components/BottomNavbar'; // Assuming this path is correct
-import { transactionsData } from '../../constants/constant';
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
+import { router } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import BottomNavbar from "../../components/BottomNavbar";
+import config from "../../config";
 
 const Wallet = () => {
+  const [walletBalance, setWalletBalance] = useState(null);
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      let userId = await AsyncStorage.getItem("userId");
+      let wallet = await axios.get(
+        `${config.baseUrl}/wallet/history/driver/${userId}`
+      );
+      let transaction = await axios.get(
+        `${config.baseUrl}/transaction?role=driver&userId=${userId}`
+      );
+      setTransactions(transaction.data);
+      setWalletBalance(wallet.data.data[0]);
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -21,9 +46,20 @@ const Wallet = () => {
             <AntDesign name="eyeo" size={18} color="#FFF" />
           </View>
           <View style={styles.balanceAmountContainer}>
-            <Text style={styles.balanceAmount}>$40,000.78</Text>
-            <TouchableOpacity onPress={() => { router.push("/home/withdraw") }} style={styles.depositButton}>
-              <MaterialCommunityIcons name="currency-usd" size={20} color="#1C1A1B" />
+            <Text style={styles.balanceAmount}>
+              ${walletBalance?.amount?.toFixed(2)}
+            </Text>
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/home/withdraw");
+              }}
+              style={styles.depositButton}
+            >
+              <MaterialCommunityIcons
+                name="currency-usd"
+                size={20}
+                color="#1C1A1B"
+              />
               <Text style={styles.depositButtonText}>Withdraw</Text>
             </TouchableOpacity>
           </View>
@@ -31,20 +67,52 @@ const Wallet = () => {
 
         {/* Quick Access Buttons */}
         <View style={styles.quickAccessContainer}>
-          <TouchableOpacity onPress={() => { router.push("/home/credit") }} style={styles.quickAccessButton}>
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/home/credit");
+            }}
+            style={styles.quickAccessButton}
+          >
             <MaterialCommunityIcons name="license" size={24} color="#FFD700" />
             <Text style={styles.quickAccessText}>Your Credits</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { router.push("/home/loyality") }} style={styles.quickAccessButton}>
-            <MaterialCommunityIcons name="star-box-outline" size={24} color="#FFD700" />
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/home/loyality");
+            }}
+            style={styles.quickAccessButton}
+          >
+            <MaterialCommunityIcons
+              name="star-box-outline"
+              size={24}
+              color="#FFD700"
+            />
             <Text style={styles.quickAccessText}>Loyalty points</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { router.push("/home/coupon") }} style={styles.quickAccessButton}>
-            <MaterialCommunityIcons name="ticket-percent-outline" size={24} color="#FFD700" />
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/home/coupon");
+            }}
+            style={styles.quickAccessButton}
+          >
+            <MaterialCommunityIcons
+              name="ticket-percent-outline"
+              size={24}
+              color="#FFD700"
+            />
             <Text style={styles.quickAccessText}>Coupon code</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { router.push("/home/coupon") }} style={styles.quickAccessButton}>
-            <MaterialCommunityIcons name="book-check-outline" size={24} color="#FFD700" />
+          <TouchableOpacity
+            onPress={() => {
+              router.push("/home/coupon");
+            }}
+            style={styles.quickAccessButton}
+          >
+            <MaterialCommunityIcons
+              name="book-check-outline"
+              size={24}
+              color="#FFD700"
+            />
             <Text style={styles.quickAccessText}>Subscription</Text>
           </TouchableOpacity>
         </View>
@@ -53,20 +121,41 @@ const Wallet = () => {
         <View style={styles.transactionsSection}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Recent transactions</Text>
-            <TouchableOpacity onPress={()=>{router.push("/home/transactions")}}>
+            <TouchableOpacity
+              onPress={() => {
+                router.push("/home/transactions");
+              }}
+            >
               <Text style={styles.seeAllText}>See all</Text>
             </TouchableOpacity>
           </View>
-          {transactionsData.map((item) => (
-            <View key={item.id} style={styles.transactionItem}>
-              <View style={[styles.transactionIconContainer, { backgroundColor: item.iconColor }]}>
-                <MaterialCommunityIcons name={item.icon} size={20} color="#FFF" />
+          {transactions.slice(0, 5).map((item) => (
+            <View key={item._id} style={styles.transactionItem}>
+              <View
+                style={[
+                  styles.transactionIconContainer,
+                  { backgroundColor: "#FFD700" },
+                ]}
+              >
+                <MaterialCommunityIcons
+                  name="currency-usd"
+                  size={20}
+                  color="#FFF"
+                />
               </View>
               <View style={styles.transactionDetails}>
-                <Text style={styles.transactionTitle}>{item.title}</Text>
-                <Text style={styles.transactionDate}>{item.date}, {item.time}</Text>
+                <Text style={styles.transactionTitle}>{item.message}</Text>
+                <Text style={styles.transactionDate}>
+                  {new Date(item.createdAt).toLocaleDateString()} •{" "}
+                  {new Date(item.createdAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
               </View>
-              <Text style={styles.transactionAmount}>{item.amount}</Text>
+              <Text style={styles.transactionAmount}>
+                ${item.amount.toFixed(2)}
+              </Text>
             </View>
           ))}
         </View>
@@ -81,104 +170,104 @@ const Wallet = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1C1A1B',
+    backgroundColor: "#1C1A1B",
   },
   scrollViewContent: {
     paddingBottom: 80, // Space for BottomNavbar
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingTop: 50, // Adjust for status bar
     paddingBottom: 20,
   },
   headerTitle: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontWeight: "bold",
+    color: "#FFF",
   },
   balanceCard: {
-    backgroundColor: '#6A0DAD', // Purple gradient-like background
+    backgroundColor: "#6A0DAD", // Purple gradient-like background
     marginHorizontal: 20,
     borderRadius: 15,
     padding: 20,
     marginBottom: 20,
   },
   balanceHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 10,
-    gap: 10
+    gap: 10,
   },
   balanceLabel: {
     fontSize: 16,
-    color: '#FFF',
+    color: "#FFF",
   },
   balanceAmountContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   balanceAmount: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontWeight: "bold",
+    color: "#FFF",
   },
   depositButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFD700', // Gold color
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFD700", // Gold color
     paddingVertical: 10,
     paddingHorizontal: 15,
     borderRadius: 10,
   },
   depositButtonText: {
-    color: '#1C1A1B',
-    fontWeight: 'bold',
+    color: "#1C1A1B",
+    fontWeight: "bold",
     marginLeft: 5,
   },
   quickAccessContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginHorizontal: 20,
     marginBottom: 20,
   },
   quickAccessButton: {
-    backgroundColor: '#2A2A2A',
+    backgroundColor: "#2A2A2A",
     borderRadius: 10,
-    width: '48%', // Approx half width with spacing
+    width: "48%", // Approx half width with spacing
     padding: 15,
-    alignItems: 'flex-start',
+    alignItems: "flex-start",
     marginBottom: 15,
   },
   quickAccessText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginTop: 10,
   },
   transactionsSection: {
     marginHorizontal: 20,
   },
   transactionsHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 15,
   },
   transactionsTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontWeight: "bold",
+    color: "#FFF",
   },
   seeAllText: {
-    color: '#FFD700',
+    color: "#FFD700",
     fontSize: 14,
   },
   transactionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#2A2A2A',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#2A2A2A",
     borderRadius: 10,
     padding: 15,
     marginBottom: 10,
@@ -187,8 +276,8 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 15,
   },
   transactionDetails: {
@@ -196,18 +285,18 @@ const styles = StyleSheet.create({
   },
   transactionTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFF',
+    fontWeight: "bold",
+    color: "#FFF",
   },
   transactionDate: {
     fontSize: 12,
-    color: '#AAA',
+    color: "#AAA",
     marginTop: 2,
   },
   transactionAmount: {
     fontSize: 16,
-    fontWeight: 'bold',
-    color: '#FFD700',
+    fontWeight: "bold",
+    color: "#FFD700",
   },
 });
 

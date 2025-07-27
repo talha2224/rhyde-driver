@@ -1,41 +1,24 @@
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
 import {
-    Image,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import userImg from '../../assets/images/home/user.png';
 import BottomNavbar from '../../components/BottomNavbar';
-
+import config from '../../config';
 const Trips = () => {
+
+  const [rideHistory, setRideHistory] = useState([])
   const [activeTab, setActiveTab] = useState('Upcoming');
 
-  const commonRydeData = {
-    userName: 'Ryan Mark',
-    userLocation: 'United States',
-    price: '$230.78',
-    pickup: '4517 Washington Ave. Manchester...',
-    destination: '2118 Thornridge Cir. Syracuse...',
-    distance: '5.7 miles',
-    date: '15 March, 2025',
-    duration: '30 Mins',
-  };
-
-  const upcomingRydesData = [
-    { id: '1', ...commonRydeData },
-    { id: '2', ...commonRydeData },
-  ];
-  const activeRydesData = [{ id: '3', ...commonRydeData }];
-  const completedRydesData = [
-    { id: '4', ...commonRydeData },
-    { id: '5', ...commonRydeData },
-  ];
-  const cancelledRydesData = [{ id: '6', ...commonRydeData }];
 
   const renderRydeCard = (item, type) => (
     <View key={item.id} style={styles.rydeHistoryCard}>
@@ -105,18 +88,46 @@ const Trips = () => {
   );
 
   const renderContent = () => {
-    const dataMap = {
-      Upcoming: upcomingRydesData,
-      Active: activeRydesData,
-      Completed: completedRydesData,
-      Cancelled: cancelledRydesData,
-    };
-    return (
-      <ScrollView contentContainerStyle={styles.tabContent}>
-        {dataMap[activeTab].map((item) => renderRydeCard(item, activeTab))}
-      </ScrollView>
+    const filtered = rideHistory.filter((item) => {
+      if (activeTab === 'Upcoming') return item.status === 'pending_approval';
+      if (activeTab === 'Active') return item.status === 'ongoing';
+      if (activeTab === 'Completed') return item.status === 'completed';
+      if (activeTab === 'Cancelled') return item.status === 'decline';
+      return false;
+    });
+
+    return (<ScrollView contentContainerStyle={styles.tabContent}>
+      {filtered.length > 0 ? (
+        filtered.map((item) =>
+          renderRydeCard(
+            {
+              id: item._id,
+              userName: 'Rider',
+              userLocation: 'N/A',
+              price: `$${(item.fare + (item.tip || 0)).toFixed(2)}`,
+              pickup: item.pickupAddress,
+              destination: item.dropOffAddress,
+              distance: `${(item.distance / 1.609).toFixed(1)} miles`, // km to miles
+              date: new Date(item.bookingTime).toLocaleDateString(),
+              duration: 'N/A',
+            },
+            activeTab
+          )
+        )
+      ) : (
+        <Text style={{ color: "#fff", textAlign: "center", marginTop: 20 }}>No {activeTab} rides found.</Text>
+      )}
+    </ScrollView>
     );
   };
+
+  useEffect(() => {
+    (async () => {
+      const driverId = await AsyncStorage.getItem("userId")
+      let response = await axios.get(`${config.baseUrl}/booking/history/all?driverId=${driverId}`)
+      setRideHistory(response?.data?.data || []);
+    })()
+  }, [])
 
   return (
     <View style={styles.container}>

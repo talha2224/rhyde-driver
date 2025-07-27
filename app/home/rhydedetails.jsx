@@ -35,7 +35,6 @@ const RydeDetails = () => {
     };
 
     const handleAcceptRequest = () => {
-        console.log('Accept request clicked');
         router.push('/home/booking/activebooking');
     };
 

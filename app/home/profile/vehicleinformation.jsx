@@ -1,124 +1,89 @@
 import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker"; // Import ImagePicker
 import { router } from "expo-router";
-import { useState } from "react";
-import {
-    Alert,
-    Image, // For showing user feedback
-    Platform,
-    ScrollView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { useEffect, useState } from "react";
+import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, } from "react-native";
 
-// Asset imports (assuming these paths are correct relative to this component)
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 import carImg from "../../../assets/images/home/profile/car.png";
-import documentImg from "../../../assets/images/home/profile/document.png";
+import config from "../../../config";
 
 const VehicleInformationScreen = () => {
-  const [activeTab, setActiveTab] = useState("Car Details"); // Default active tab
+  const [activeTab, setActiveTab] = useState("Car Details");
+  const [user, setUser] = useState(null);
+  const vehicleDetails = { carName: "SUV Sonic 309", carColor: "Yellow", numberOfSeats: 4, yearsOfUsage: "3 years", carImage: carImg };
 
-  // State for Vehicle Details tab
-  const vehicleDetails = {
-    carName: "SUV Sonic 309",
-    carColor: "Yellow",
-    numberOfSeats: 4,
-    yearsOfUsage: "3 years",
-    carImage: carImg, // Example car image
-  };
+  const handleGoBack = () => { router.back(); };
 
-  // States for Vehicle Documents tab
-  const [vehicleRegistrationUri, setVehicleRegistrationUri] = useState(null);
-  const [insuranceDocumentUri, setInsuranceDocumentUri] = useState(null);
-
-  // State for Driver's License tab
-  const [driversLicenseUri, setDriversLicenseUri] = useState(null);
-
-  const handleGoBack = () => {
-    router.back();
-  };
-
-  const requestMediaLibraryPermission = async () => {
-    if (Platform.OS !== "web") {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission required",
-          "Sorry, we need media library permissions to upload your documents!",
-          [{ text: "OK" }]
-        );
-        return false;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (!userId) return;
+        const res = await axios.get(`${config.baseUrl}/driver/info/${userId}`);
+        setUser(res.data.data);
+      } catch (error) {
+        console.error("Error fetching user info:", error?.response?.data || error.message);
       }
-      return true;
-    }
-    return true;
-  };
+    };
 
-  const pickDocument = async (setDocumentUri, docType) => {
-    const hasMediaLibraryPermission = await requestMediaLibraryPermission();
-    if (!hasMediaLibraryPermission) return;
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled && result.assets && result.assets.length > 0) {
-      setDocumentUri(result.assets[0].uri);
-      Alert.alert("Document Uploaded", `Your ${docType} has been selected!`);
-    } else {
-      Alert.alert(
-        "Document Not Selected",
-        `No document was selected for ${docType}.`
-      );
-    }
-  };
+    fetchData();
+  }, []);
 
   const renderCarDetailsTab = () => (
     <ScrollView contentContainerStyle={styles.tabContent}>
       <View style={styles.carDetailsGrid}>
         <View style={styles.carDetailBox}>
           <Text style={styles.carDetailLabel}>Car Name</Text>
-          <Text style={styles.carDetailValue}>{vehicleDetails.carName}</Text>
+          <Text style={styles.carDetailValue}>{user?.make} {user?.model}</Text>
         </View>
         <View style={styles.carDetailBox}>
           <Text style={styles.carDetailLabel}>Car Color</Text>
-          <Text style={styles.carDetailValue}>{vehicleDetails.carColor}</Text>
+          <Text style={styles.carDetailValue}>{user?.color}</Text>
         </View>
         <View style={styles.carDetailBox}>
-          <Text style={styles.carDetailLabel}>Number of Seats</Text>
-          <Text style={styles.carDetailValue}>
-            {vehicleDetails.numberOfSeats}
-          </Text>
+          <Text style={styles.carDetailLabel}>License Plate</Text>
+          <Text style={styles.carDetailValue}>{user?.license_plate_number}</Text>
         </View>
         <View style={styles.carDetailBox}>
-          <Text style={styles.carDetailLabel}>Years of usage</Text>
+          <Text style={styles.carDetailLabel}>Account Verified</Text>
           <Text style={styles.carDetailValue}>
-            {vehicleDetails.yearsOfUsage}
+            {user?.accountVerified ? "Yes" : "No"}
           </Text>
         </View>
+      </View>
+
+      <View style={styles.imageRow}>
+        {user?.front_view_img && (
+          <Image source={{ uri: user.front_view_img }} style={styles.vehicleImage} />
+        )}
+        {user?.side_view_img && (
+          <Image source={{ uri: user.side_view_img }} style={styles.vehicleImage} />
+        )}
+        {user?.back_view_img && (
+          <Image source={{ uri: user.back_view_img }} style={styles.vehicleImage} />
+        )}
+        {user?.inside_view_img && (
+          <Image source={{ uri: user.inside_view_img }} style={styles.vehicleImage} />
+        )}
       </View>
     </ScrollView>
   );
 
+
   const renderVehicleDocumentsTab = () => (
     <ScrollView contentContainerStyle={styles.tabContent}>
       <View style={styles.documentUploadSection}>
-        <TouchableOpacity style={styles.documentUploadBox}>
-          <Image source={documentImg} style={styles.documentIcon} />
-          <Text style={styles.documentUploadText}>Vehicle registration</Text>
-        </TouchableOpacity>
+        <View style={styles.documentUploadBox}>
+          <Image source={{ uri: user?.vehicle_registration_img }} style={styles.documentIcon} />
+          <Text style={styles.documentUploadText}>Vehicle Registration</Text>
+        </View>
 
-        <TouchableOpacity style={styles.documentUploadBox}>
-          <Image source={documentImg} style={styles.documentIcon} />
+        <View style={styles.documentUploadBox}>
+          <Image source={{ uri: user?.insurance_document_img }} style={styles.documentIcon} />
           <Text style={styles.documentUploadText}>Insurance Document</Text>
-        </TouchableOpacity>
+        </View>
+
       </View>
     </ScrollView>
   );
@@ -126,10 +91,11 @@ const VehicleInformationScreen = () => {
   const renderDriversLicenseTab = () => (
     <ScrollView contentContainerStyle={styles.tabContent}>
       <View style={styles.licenseUploadSection}>
-        <TouchableOpacity style={styles.licenseUploadBox}>
-          <Image source={documentImg} style={styles.documentIcon} />
+        <View style={styles.licenseUploadBox}>
+          <Image source={{ uri: user?.license_img }} style={styles.documentIcon} />
           <Text style={styles.documentUploadText}>Driver's License</Text>
-        </TouchableOpacity>
+        </View>
+
       </View>
     </ScrollView>
   );
@@ -152,7 +118,7 @@ const VehicleInformationScreen = () => {
       <StatusBar barStyle="light-content" backgroundColor="#1C1A1B" />
 
       <ScrollView showsVerticalScrollIndicator={false}>
-        
+
         <View style={styles.header}>
           <TouchableOpacity onPress={handleGoBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#FFF" />
@@ -170,9 +136,9 @@ const VehicleInformationScreen = () => {
           }}
         >
           <Image
-            source={vehicleDetails.carImage}
+            source={{ uri: user?.front_view_img }}
             style={styles.carImage}
-            resizeMode="contain"
+            resizeMode="cover"
           />
         </View>
 

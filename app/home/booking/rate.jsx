@@ -14,8 +14,6 @@ const Rate = () => {
     };
 
     const handleSubmitRating = () => {
-        console.log('Rating:', rating);
-        console.log('Feedback:', feedback);
         router.push("/home/booking/tip"); // Or navigate to a confirmation screen
     };
 

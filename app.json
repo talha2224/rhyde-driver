@@ -9,7 +9,15 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.talhadev767.rhydedriver",
+      "merchantIdentifier": "merchant.com.talhadev767.rhydedriver",
+      "config": {
+        "googleMapsApiKey": "AIzaSyA0P_pnW6OWas9hZhiEOt0qJ8hSopz_91s"
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app requires access to your location to show nearby drivers and provide location-based services."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +25,13 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.talhadev767.rhydedriver"
+      "package": "com.talhadev767.rhydedriver",
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyA0P_pnW6OWas9hZhiEOt0qJ8hSopz_91s"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -34,8 +48,15 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.talhadev767.rhydedriver"
+        }
       ]
     ],
+
     "experiments": {
       "typedRoutes": true
     },
@@ -43,7 +64,8 @@
       "router": {},
       "eas": {
         "projectId": "05a72adb-b2a8-4603-85cb-2364596a9ae5"
-      }
+      },
+      "stripePublishableKey": "pk_test_51OjJpTASyMRcymO6x2PBK1nrHChycNMNXj7HHvTRffOp5xufCj3WRSCLoep1tGp5Ilx3IWj7ck5yqrwEH8VSRKn80055Kvyelu"
     }
   }
 }

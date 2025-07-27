@@ -1,22 +1,53 @@
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Image, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
 import cover_photo from "../../../assets/images/cover_photo.png";
 import badgeImg from '../../../assets/images/home/badge.png';
-import profile_photo from "../../../assets/images/profile_photo.png";
 import BottomNavbar from "../../../components/BottomNavbar";
-import { menuItems, milestonesData, reviewsData, userDetails } from '../../../constants/constant';
+import config from '../../../config';
+import { menuItems, milestonesData } from '../../../constants/constant';
 
 const Profile = () => {
   const [activeTab, setActiveTab] = useState('Profile');
+  const [user, setUser] = useState(null);
+  const [balance, setBalance] = useState(0);
+  const [rideHistory, setRideHistory] = useState([])
+  const [reviews, setReviews] = useState([]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const userId = await AsyncStorage.getItem('userId');
+        if (!userId) return;
+        const res = await axios.get(`${config.baseUrl}/driver/info/${userId}`);
+        let wallet = await axios.get(`${config.baseUrl}/wallet/history/driver/${userId}`);
+        let ride = await axios.get(`${config.baseUrl}/booking/history/all?driverId=${userId}`)
+        let review = await axios.get(`${config.baseUrl}/review?driverId=${userId}`)
+        setRideHistory(ride?.data?.data || []);
+        setUser(res.data.data);
+        setBalance(wallet?.data?.data[0]?.amount)
+        setReviews(review?.data?.data)
+
+      } catch (error) {
+        console.error("Error fetching user info:", error?.response?.data || error.message);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleLogout = async () => {
+    await AsyncStorage.removeItem("userId")
+    router.push('/signin')
+  }
 
   const renderProfileTab = () => (
     <View style={styles.menuSection}>
       {menuItems.map(({ title, description, icon, route, danger }) => (
-        <TouchableOpacity key={title} style={styles.menuItem} onPress={() => router.push(route)}>
+        <TouchableOpacity key={title} style={styles.menuItem} onPress={title === "Logout" ? handleLogout : () => router.push(route)}>
           <MaterialCommunityIcons name={icon} size={24} color={danger ? "#FF6347" : "#FFD700"} />
           <View style={styles.menuItemTextContainer}>
             <Text style={styles.menuItemTitle}>{title}</Text>
@@ -30,47 +61,71 @@ const Profile = () => {
     </View>
   );
 
-  const renderReviewsTab = () => (
-    <ScrollView contentContainerStyle={styles.tabContent}>
-      <View style={styles.reviewsSummary}>
-        <Text style={styles.averageRating}>{reviewsData.averageRating}</Text>
-        <Text style={styles.totalReviews}>({reviewsData.totalReviews} driver reviews)</Text>
-        {[5, 4, 3, 2, 1].map((star) => (
-          <View key={star} style={styles.ratingBarContainer}>
-            <Text style={styles.ratingBarLabel}>{star}</Text>
-            <View style={styles.progressBarBackground}>
-              <View style={[styles.progressBarFill, { width: `${reviewsData.ratingsBreakdown[star]}%` }]} />
-            </View>
-            <Text style={styles.ratingPercentage}>{reviewsData.ratingsBreakdown[star]}%</Text>
-          </View>
-        ))}
-      </View>
+  const renderReviewsTab = () => {
+    const getRatingStats = (reviews) => {
+      const total = reviews.length;
+      const starCount = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
 
-      <Text style={styles.feedbackTitle}>Feedback & reviews</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.feedbackFilter}>
-        {['Verified', 'Latest','New','Previous', 'Neutral'].map((label, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[styles.filterButton, label === 'Verified' && { backgroundColor: "#FBB73A" }]}
-          >
-            <Text style={[styles.filterButtonText, label === 'Verified' && { color: "#000" }]}>{label}</Text>
-          </TouchableOpacity>
+      reviews.forEach(r => {
+        starCount[r.stars] = (starCount[r.stars] || 0) + 1;
+      });
+
+      const average = (reviews.reduce((acc, r) => acc + r.stars, 0) / total || 0).toFixed(1);
+
+      const ratingsBreakdown = {};
+      for (let i = 1; i <= 5; i++) {
+        ratingsBreakdown[i] = total ? ((starCount[i] / total) * 100).toFixed(0) : 0;
+      }
+
+      return { averageRating: average, totalReviews: total, ratingsBreakdown };
+    };
+
+    const ratingStats = getRatingStats(reviews);
+
+    return (
+      <ScrollView contentContainerStyle={styles.tabContent}>
+        <View style={styles.reviewsSummary}>
+          <Text style={styles.averageRating}>{ratingStats.averageRating}</Text>
+          <Text style={styles.totalReviews}>({ratingStats.totalReviews} driver reviews)</Text>
+          {[5, 4, 3, 2, 1].map((star) => (
+            <View key={star} style={styles.ratingBarContainer}>
+              <Text style={styles.ratingBarLabel}>{star}</Text>
+              <View style={styles.progressBarBackground}>
+                <View style={[styles.progressBarFill, { width: `${ratingStats.ratingsBreakdown[star]}%` }]} />
+              </View>
+              <Text style={styles.ratingPercentage}>{ratingStats.ratingsBreakdown[star]}%</Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.feedbackTitle}>Feedback & reviews</Text>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.feedbackFilter}>
+          {['Verified', 'Latest', 'New', 'Previous', 'Neutral'].map((label, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.filterButton, label === 'Verified' && { backgroundColor: "#FBB73A" }]}
+            >
+              <Text style={[styles.filterButtonText, label === 'Verified' && { color: "#000" }]}>{label}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        {reviews.map((item, index) => (
+          <View key={item._id || index} style={styles.feedbackItem}>
+            <Image source={{uri:item?.driverId?.profile_img}} style={styles.feedbackUserImage} />
+            <View style={styles.feedbackDetails}>
+              <Text style={styles.feedbackUserName}>{item?.driverId?.name}</Text>
+              <Text style={styles.feedbackTripId}>Booking ID: {item.bookingId.slice(-6)} | {new Date(item.createdAt).toLocaleDateString()}</Text>
+              <Text style={styles.feedbackComment}>{item.message.trim()}</Text>
+            </View>
+            <MaterialCommunityIcons name="star" size={24} color="#FFD700" />
+            <Text style={{ color: 'white', marginLeft: 4 }}>{item.stars}</Text>
+          </View>
         ))}
       </ScrollView>
+    );
+  };
 
-      {reviewsData.feedback.map((item) => (
-        <View key={item.id} style={styles.feedbackItem}>
-          <Image source={profile_photo} style={styles.feedbackUserImage} />
-          <View style={styles.feedbackDetails}>
-            <Text style={styles.feedbackUserName}>{item.userName}</Text>
-            <Text style={styles.feedbackTripId}>Trip ID: {item.tripId} | {item.date}</Text>
-            <Text style={styles.feedbackComment}>{item.comment}</Text>
-          </View>
-          <MaterialCommunityIcons name="dots-horizontal" size={24} color="#FFF" />
-        </View>
-      ))}
-    </ScrollView>
-  );
 
   const renderMilestonesTab = () => (
     <ScrollView contentContainerStyle={styles.tabContent}>
@@ -108,6 +163,16 @@ const Profile = () => {
     }
   };
 
+
+  const getRatingStats = (reviews) => {
+    const total = reviews.length;
+    const average = (reviews.reduce((acc, r) => acc + r.stars, 0) / total || 0).toFixed(1);
+    return average;
+  };
+
+  const averageRating = getRatingStats(reviews);
+
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1C1A1B" />
@@ -116,20 +181,19 @@ const Profile = () => {
         <View style={styles.profileHeaderSection}>
           <Image source={cover_photo} style={styles.coverPhoto} resizeMode="cover" />
           <View style={styles.profileCard}>
-            <Image source={profile_photo} style={styles.profilePhoto} />
-            <Text style={styles.userName}>{userDetails.name}</Text>
-            <Text style={styles.userLocation}>{userDetails.location}</Text>
+            <Image source={{ uri: user?.profile_img }} style={styles.profilePhoto} />
+            <Text style={styles.userName}>{user?.name}</Text>
             <View style={styles.profileStats}>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{userDetails.rating}</Text>
+                <Text style={styles.statValue}>{averageRating}</Text>
                 <Text style={styles.statLabel}>Ratings</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{userDetails.numberOfTrips}</Text>
+                <Text style={styles.statValue}>{rideHistory?.length}</Text>
                 <Text style={styles.statLabel}>Trips</Text>
               </View>
               <View style={styles.statItem}>
-                <Text style={styles.statValue}>{userDetails.totalEarned}</Text>
+                <Text style={styles.statValue}>{balance?.toFixed(2)}</Text>
                 <Text style={styles.statLabel}>Earned</Text>
               </View>
             </View>

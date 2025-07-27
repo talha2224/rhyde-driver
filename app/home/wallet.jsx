@@ -121,13 +121,13 @@ const Wallet = () => {
         <View style={styles.transactionsSection}>
           <View style={styles.transactionsHeader}>
             <Text style={styles.transactionsTitle}>Recent transactions</Text>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={() => {
                 router.push("/home/transactions");
               }}
             >
               <Text style={styles.seeAllText}>See all</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
           {transactions.slice(0, 5).map((item) => (
             <View key={item._id} style={styles.transactionItem}>

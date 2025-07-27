@@ -76,7 +76,10 @@ const Home = () => {
           text2: "Have A Safe Journey",
         });
         setShowRydeRequestsModal(false);
-        router.push({pathname:"/home/booking/activebooking",params:{bookingData:JSON.stringify(res?.data?.data)}});
+        setAllRideRequest([])
+        setTimeout(() => {
+          router.push({ pathname: "/home/booking/activebooking", params: { bookingData: JSON.stringify(res?.data?.data) } });
+        }, 1000);
       });
   };
 
@@ -129,7 +132,7 @@ const Home = () => {
         if (!userId) return;
         const response = await axios.get(`${config.baseUrl}/driver/info/${userId}`);
         if (response.data?.data) {
-          console.log(response?.data?.data?.online,'response?.data?.data?.online')
+          console.log(response?.data?.data?.online, 'response?.data?.data?.online')
           setUser(response.data.data);
           setIsOnline(response?.data?.data?.online)
         }
@@ -177,7 +180,10 @@ const Home = () => {
     if (!socket) return;
 
     socket.on("newBookingRequest", (bookingData) => {
-      setAllRideRequest([...allRideRequest, bookingData]);
+      setAllRideRequest(prev => {
+        if (prev.some(req => req._id === bookingData._id)) return prev;
+        return [...prev, bookingData];
+      });
       setShowRydeRequestsModal(true);
     });
 

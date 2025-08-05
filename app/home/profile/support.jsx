@@ -10,26 +10,76 @@ const Support = () => {
   const faqs = [
     {
       id: '1',
-      question: 'How do I book a ryde?',
-      answer: "It's important to address common questions and concerns that users may have about the app. Here are some necessary questions to include",
+      question: 'What is Your Ryde?',
+      answer: 'Your Ryde is a rideshare platform designed to offer safer Rydes, better driver benefits, lower commission rates, and innovative rewards for riders and drivers.',
     },
     {
       id: '2',
-      question: 'Can I schedule a ryde in advance?',
-      answer: "Yes, you can schedule a ryde up to 48 hours in advance using the 'Schedule ryde' option.",
+      question: 'How is Your Ryde different from Uber or Lyft?',
+      answer: 'We offer capped surge pricing (max 2%), a flat 20% commission, driver bonuses, wear & tear rewards, a loyalty points program, and a unique multi-level referral system.',
     },
     {
       id: '3',
-      question: 'What if my driver cancels the ryde?',
-      answer: "If your driver cancels, the app will automatically try to find you another driver. If no driver is found, you will not be charged.",
+      question: 'Where is Your Ryde currently available?',
+      answer: 'Your Ryde launches first in Boston, Massachusetts with plans to expand to other cities and international markets.',
     },
     {
       id: '4',
-      question: 'How do I report an issue with my ryde?',
-      answer: "You can report an issue directly from your past rides history or through the 'Report a problem' section in your profile settings.",
+      question: 'Does Your Ryde allow cash payments?',
+      answer: 'Not at this time. We accept credit/debit cards, PayPal, and digital wallets for secure transactions.',
     },
-    // You can add more FAQs here
+    {
+      id: '5',
+      question: 'How much commission does Your Ryde take?',
+      answer: 'We have a flat 20% commission across all Rydes—no hidden fees or fluctuating percentages.',
+    },
+    {
+      id: '6',
+      question: 'What bonuses are available for drivers?',
+      answer: 'Drivers can earn bonuses like $30 for 60 Rydes on weekends or $60 for 120 weekday Rydes in 4 days.',
+    },
+    {
+      id: '7',
+      question: 'What is the Wear & Tear Package?',
+      answer: 'After driving 3,000 miles with Your Ryde, drivers receive a $250 gift card for car repairs, tires, tune-ups, and more.',
+    },
+    {
+      id: '8',
+      question: 'What is the Buddy System?',
+      answer: 'If your car breaks down or you have an accident, we send a tow truck and a backup driver to transport your rider. You also get a $100 annual credit toward these services.',
+    },
+    {
+      id: '9',
+      question: 'How does the referral program work for drivers?',
+      answer: 'Invite drivers or riders and earn credits for every Ryde they take. Our referral system is direct and up to 10 levels deep.',
+    },
+    {
+      id: '10',
+      question: 'Do drivers and riders need to verify their identity?',
+      answer: 'Yes. Both must upload a profile picture and a valid ID or license during sign-up.',
+    },
+    {
+      id: '11',
+      question: 'Can I see my driver’s details before the Ryde starts?',
+      answer: 'Absolutely. You’ll see their photo, name, vehicle model, color, and license plate before your trip begins.',
+    },
+    {
+      id: '12',
+      question: 'How are drivers screened?',
+      answer: 'All drivers undergo background checks, license verification, and vehicle inspections before being approved.',
+    },
+    {
+      id: '13',
+      question: 'How do I contact Your Ryde for support?',
+      answer: 'You can reach us via the in-app support chat, email at support@yourryde.com, or through the Contact Us page on our website.',
+    },
+    {
+      id: '14',
+      question: 'What is Your Ryde’s cancellation policy?',
+      answer: 'Riders can cancel without fees within the grace period. Subscribers get extra free cancellations based on their subscription.',
+    }
   ];
+
 
   const toggleFAQ = (id) => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
@@ -102,7 +152,7 @@ const styles = StyleSheet.create({
   supportInfo: {
     alignItems: 'center',
     marginBottom: 30,
-    flex:1
+    flex: 1
   },
   supportImage: {
     width: 60, // Adjust size as needed
@@ -129,10 +179,10 @@ const styles = StyleSheet.create({
   },
   faqItem: {
     paddingVertical: 15,
-    backgroundColor:"#1C1A1B",
-    paddingHorizontal:10,
-    marginBottom:10,
-    borderRadius:10
+    backgroundColor: "#1C1A1B",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 10
   },
   faqQuestionContainer: {
     flexDirection: 'row',

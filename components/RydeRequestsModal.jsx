@@ -24,7 +24,7 @@ const RydeRequestsModal = ({ visible, onClose, requests, onAccept, onIgnore }) =
                                     <Image source={{uri:request?.riderId?.profile}} style={styles.rydeRequestAvatar} />
                                     <Text style={styles.rydeRequestName}>{request?.riderId?.name}</Text>
                                     <Text style={styles.rydeRequestDistance}>{request?.distance?.toFixed(2)}Km</Text>
-                                    <Text style={styles.rydeRequestPrice}>{request?.fare}</Text>
+                                    <Text style={styles.rydeRequestPrice}>${request?.fare}</Text>
                                 </View>
                                 <View style={styles.rydeRequestLocation}>
                                     <MaterialCommunityIcons name="circle-outline" size={16} color="#FFD700" />
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
-        backgroundColor: "#fff",
+        backgroundColor: "#FFD700",
         borderRadius: 10,
         padding: 10,
     },
@@ -114,16 +114,17 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         flex: 1,
+        color:"black"
     },
     rydeRequestDistance: {
         fontSize: 14,
-        color: '#AAA',
+        color:"black",
         marginRight: 10,
     },
     rydeRequestPrice: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#FFD700',
+        color:"black"
     },
     rydeRequestLocation: {
         flexDirection: 'row',

@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
   // Milestones Tab Specific Styles (from original Trips component)
   milestoneLevelCard: {
     backgroundColor: '#FFD700', // Gold background
-    borderRadius: 15,
+    borderRadius: 0,
     padding: 20,
     marginBottom: 20,
   },

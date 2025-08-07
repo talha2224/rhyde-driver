@@ -94,7 +94,7 @@ const ActiveBooking = () => {
                 <Image source={{ uri: bookingDetails?.riderId?.profile }} style={styles.passengerAvatar} />
                 <View style={styles.passengerDetails}>
                     <Text style={styles.passengerName}>{bookingDetails?.riderId?.name}</Text>
-                    <Text style={styles.passengerDistance}>{bookingDetails?.distance?.toFixed(2)}Km</Text>
+                    <Text style={styles.passengerDistance}>{bookingDetails?.distance?.toFixed(2)}Miles</Text>
                 </View>
                 {/* <TouchableOpacity onPress={() => { router.push("/home/chat") }} style={styles.passengerActionButton}>
                     <Ionicons name="chatbox-outline" size={20} color="#FFF" />

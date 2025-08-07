@@ -122,7 +122,7 @@ const ActiveBooking = () => {
             <Text style={styles.bottomSheetHeader}>Trip completed</Text>
             <Image source={badge_image} style={{ marginBottom: 10 }} />
             <Text style={styles.tripSuccessfulTitle}>Trip successful</Text>
-            <Text style={styles.tripSuccessfulDescription}>You've completed the trip. Kindly rate your ryder</Text>
+            <Text style={styles.tripSuccessfulDescription}>You have completed your ryde. Kindly rate your driver.</Text>
             <TouchableOpacity style={styles.actionButton} onPress={handleRateRyder}>
                 <Text style={styles.actionButtonText}>Rate ryder</Text>
             </TouchableOpacity>

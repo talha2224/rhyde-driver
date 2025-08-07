@@ -23,7 +23,7 @@ const RydeRequestsModal = ({ visible, onClose, requests, onAccept, onIgnore }) =
                                 <View style={styles.rydeRequestHeader}>
                                     <Image source={{uri:request?.riderId?.profile}} style={styles.rydeRequestAvatar} />
                                     <Text style={styles.rydeRequestName}>{request?.riderId?.name}</Text>
-                                    <Text style={styles.rydeRequestDistance}>{request?.distance?.toFixed(2)}Km</Text>
+                                    <Text style={styles.rydeRequestDistance}>{request?.distance?.toFixed(2)}Mile</Text>
                                     <Text style={styles.rydeRequestPrice}>${request?.fare}</Text>
                                 </View>
                                 <View style={styles.rydeRequestLocation}>

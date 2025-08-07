@@ -27,7 +27,7 @@ const Report = () => {
         <View style={styles.reportInfo}>
           <Image source={feedbackImg} style={styles.reportImage} />
           <Text style={styles.reportQuestion}>What would you like us to help you with?</Text>
-          <Text style={styles.reportHelperText}>How can we help you, do you have a question? 95% of question can be answered in the F.A.Q’s below if you can find your questions please send us a message and we will do our best to answer them accordingly.</Text>
+          <Text style={styles.reportHelperText}>How can we help you, do you have a question? 95% of question can be answered in the F.A.Q’s below if you can't find your questions please send us a message and we will do our best to answer them accordingly.</Text>
         </View>
 
         <View style={styles.messageInputContainer}>

@@ -1,4 +1,4 @@
-import { AntDesign, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { router } from 'expo-router';
@@ -76,7 +76,7 @@ const Signup = () => {
                         <Text style={styles.descriptionText}>Sign in to continue your smooth and secure ryde experience</Text>
 
                         {/* Social Sign-in Icons */}
-                        <View style={styles.socialLoginContainer}>
+                        {/* <View style={styles.socialLoginContainer}>
                             <TouchableOpacity style={styles.socialIconButton}>
                                 <AntDesign name="google" size={28} color="#FFF" />
                             </TouchableOpacity>
@@ -88,7 +88,7 @@ const Signup = () => {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.orSignInText}>Or sign up with</Text>
+                        <Text style={styles.orSignInText}>Or sign up with</Text> */}
 
                         {/* Email Input */}
                         <View style={styles.inputContainer}>
